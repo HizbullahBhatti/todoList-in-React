@@ -12,6 +12,8 @@ const getLocalData=()=>{
 const Todo = () => {
   const [inputData, setInputData] = useState(""); // for input data
   const [items, setItems] = useState(getLocalData()); // for storing todo list
+  const[isEditItem,setIsEditItem]=useState(""); // for edit the item
+  const[toggleButton,setToggleButton]=useState(false); // for toggle the button [edit button]
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -21,7 +23,21 @@ const Todo = () => {
   const addItems = () => {
     if (!inputData) {
       alert("Please fill the data");
-    } else {
+    }
+    else if(inputData && toggleButton){
+      setItems(
+        items.map((curElem)=>{
+          if(curElem.id===isEditItem){
+            return {...curElem,name:inputData};
+          }
+          return curElem;
+        })
+      );
+      setInputData("");
+      setIsEditItem(null);
+      setToggleButton(false);
+    }
+    else {
       const myNewInputData = {
         id: new Date().getTime().toString(),
         name: inputData,
@@ -41,6 +57,16 @@ const Todo = () => {
 
   const removeAll = () => {
     setItems([]);
+  }
+
+  const editItem = (id) => {
+    const editItem = items.find((curElem) => {
+      return curElem.id === id;
+    });
+    console.log(editItem);
+    setIsEditItem(id); //for matching id of edit item
+    setInputData(editItem.name);
+    setToggleButton(true);
   }
 
   useEffect(()=>{
@@ -66,7 +92,8 @@ const Todo = () => {
                 setInputData(event.target.value);
               }}
             />
-            <i className="fa fa-plus add-btn" onClick={addItems}></i>
+            {toggleButton ? <i className="far fa-edit add-btn" onClick={addItems}></i>
+            :<i className="fa fa-plus add-btn" onClick={addItems}></i>}
           </div>
 
           <div className="showItems">
@@ -75,7 +102,7 @@ const Todo = () => {
                 <div className="eachItem" key={curElement.id}>
                   <h3>{curElement.name}</h3>
                   <div className="todo-btn">
-                    <i className="far fa-edit add-btn"></i>
+                    <i className="far fa-edit add-btn" onClick={()=>{editItem(curElement.id)}}></i>
                     <i className="far fa-trash-alt add-btn" onClick={()=>deleteItem(curElement.id)}></i>
                   </div>
                 </div>
