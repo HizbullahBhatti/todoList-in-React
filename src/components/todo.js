@@ -1,25 +1,84 @@
-import React from 'react'
-import './style.css'
-const todo = () => {
+import { React, useState, useRef, useEffect } from "react";
+import "./style.css";
+const Todo = () => {
+  const [inputData, setInputData] = useState(""); // for input data
+  const [items, setItems] = useState([]); // for storing todo list
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus();
+  });
+
+  const addItems = () => {
+    if (!inputData) {
+      alert("Please fill the data");
+    } else {
+      const myNewInputData = {
+        id: new Date().getTime().toString(),
+        name: inputData,
+      }
+      setItems([...items, myNewInputData]);
+      setInputData("");
+    }
+  };
+
+  const deleteItem = (id) => {
+    const updatedItems = items.filter((curElem) => {
+      return curElem.id !== id;
+    });
+    console.log(updatedItems);
+    setItems(updatedItems);
+  };
+
+  const removeAll = () => {
+    setItems([]);
+  }
+
   return (
     <>
-    <div className="main-div">
+      <div className="main-div">
         <div className="child-div">
-            <figure>
-                <img src="./images/todo.svg" alt="Image not found" />
-                <figcaption>Add your List here</figcaption>
-            </figure>
-            <div className="addItems">
-                <input type="text" placeholder='Add Items ... ' className='form-control'/>
-                <i className="fa fa-plus add-btn"></i>
-            </div>
-        </div>
-    </div>
-    
-    
-    
-    </>
-  )
-}
+          <figure>
+            <img src="./images/todo.svg" alt="not found" />
+            <figcaption>Add your List here</figcaption>
+          </figure>
+          <div className="addItems">
+            <input
+              type="text"
+              ref={inputRef}
+              placeholder="Add Items ... "
+              className="form-control"
+              value={inputData}
+              onChange={(event) => {
+                setInputData(event.target.value);
+              }}
+            />
+            <i className="fa fa-plus add-btn" onClick={addItems}></i>
+          </div>
 
-export default todo
+          <div className="showItems">
+            {items.map((curElement) => {
+              return (
+                <div className="eachItem" key={curElement.id}>
+                  <h3>{curElement.name}</h3>
+                  <div className="todo-btn">
+                    <i className="far fa-edit add-btn"></i>
+                    <i className="far fa-trash-alt add-btn" onClick={()=>deleteItem(curElement.id)}></i>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="showItems">
+            <button className="btn effect04" data-sm-link-text="Remove All" onClick={removeAll}>
+              <span>CHECK LIST</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Todo;
