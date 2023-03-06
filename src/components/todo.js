@@ -1,8 +1,17 @@
 import { React, useState, useRef, useEffect } from "react";
 import "./style.css";
+
+const getLocalData=()=>{
+  const list=localStorage.getItem("mytodolist");
+  if(list){
+    return JSON.parse(list);
+  }else{
+    return [];
+  }
+}
 const Todo = () => {
   const [inputData, setInputData] = useState(""); // for input data
-  const [items, setItems] = useState([]); // for storing todo list
+  const [items, setItems] = useState(getLocalData()); // for storing todo list
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -33,6 +42,10 @@ const Todo = () => {
   const removeAll = () => {
     setItems([]);
   }
+
+  useEffect(()=>{
+    localStorage.setItem("mytodolist",JSON.stringify(items));
+  },[items]);
 
   return (
     <>
